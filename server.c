@@ -4,7 +4,7 @@
 #include <string.h>
 #include <winsock2.h>
 // 定义常量
-#define PORT 8888 // 监听端口
+#define PORT 9999 // 监听端口
 #define BUF_SIZE 1024 // 缓冲区大小
 
 // 初始化套接字库
@@ -97,7 +97,7 @@ void communicate(SOCKET client_sock)
 			printf("请回复：");
             gets(reply);
             send(client_sock, reply , strlen(reply), 0);
-            printf("回复客户端消息：%s\n", buf);
+            printf("回复客户端消息：%s\n", reply);
 
             // 如果收到"bye"，则结束通信
             if (strcmp(buf, "bye") == 0) 
@@ -124,12 +124,6 @@ void close_socket(SOCKET sock)
     closesocket(sock);
 }
 
-// 清理套接字库
-void cleanup_winsock() 
-{
-    WSACleanup();
-}
-
 int main() {
     // 初始化套接字库
     init_winsock();
@@ -154,5 +148,6 @@ int main() {
     close_socket(server_sock);
 
     // 清空
+    WSACleanup();
 	return 0;
 }
