@@ -10,7 +10,7 @@
 
 // 参数区
 #pragma  comment(lib,"ws2_32.lib")
-#define IP_ARR "82.157.254.160"//"10.42.223.87"
+#define IP_ARR ""
 #define PORT 9999 //接收端口
 #define PORT_SERVER 8888 //发送端口
 

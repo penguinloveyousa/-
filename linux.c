@@ -11,7 +11,7 @@
 #define PORT 8888 // 服务端监听的端口号
 #define PORT_FOR 9999
 #define MAXLINE 1024 // 缓冲区大小
-#define IP_ADDR "192.168.31.127"
+#define IP_ADDR ""
 // 设置超时时间为10秒
 #define TIMEOUT 10
 
