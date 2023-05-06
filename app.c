@@ -1,4 +1,4 @@
-// ¿âÎÄ¼şÇø
+// åº“æ–‡ä»¶åŒº
 #include <WINSOCK2.H>
 #include <STDIO.H>
 #include <time.h>
@@ -8,35 +8,41 @@
 #include <string.h>
 #include <stdbool.h>
 
-// ²ÎÊıÇø
+// å‚æ•°åŒº
 #pragma  comment(lib,"ws2_32.lib")
-#define IP_ARR ""
-#define PORT 9999 //½ÓÊÕ¶Ë¿Ú
-#define PORT_SERVER 8888 //·¢ËÍ¶Ë¿Ú
-
-// º¯ÊıÇø
-void WSAsetup() //¼ÓÔØÌ×½Ó×Ö¿â
+#define PORT 9999 //æ¥æ”¶ç«¯å£
+#define PORT_SERVER 8888 //å‘é€ç«¯å£
+#define SERVER_IP "82.157.254.160"
+char IP_ARR[30];
+char HE_N[30];
+char MY_N[30];
+// å‡½æ•°åŒº
+void WSAsetup() //åŠ è½½å¥—æ¥å­—åº“
 {
 	WSADATA data;
 	if (WSAStartup(MAKEWORD(2, 2), &data) != 0)
 	{
-		printf("Ì×½Ó×Ö¿â´íÎó£¡\n");
+		printf("å¥—æ¥å­—åº“é”™è¯¯ï¼\n");
 		exit(1);
 	}
 }
 
-SOCKET create_socket() //´´½¨Ì×½Ó×Ö
+static SOCKET create_socket() //åˆ›å»ºå¥—æ¥å­—
 {
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) 
 	{
-        printf("´´½¨Ì×½Ó×ÖÊ§°Ü£¡\n");
+        printf("åˆ›å»ºå¥—æ¥å­—å¤±è´¥ï¼\n");
         WSACleanup();
         exit(1);
     }
     return sock;
 }
 
+extern char* myname(char* myname) {
+	strcpy(MY_N, myname);
+	return myname;
+}
 void bind_address_p2p(SOCKET sclient)
 {
 		sockaddr_in serAddr;
@@ -45,7 +51,7 @@ void bind_address_p2p(SOCKET sclient)
 		serAddr.sin_addr.S_un.S_addr = inet_addr(IP_ARR);
 		if (connect(sclient, (sockaddr*)& serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
-			printf("Á¬½Ó´íÎó£¡");
+			printf("è¿æ¥é”™è¯¯ï¼");
 			closesocket(sclient);
 			exit(1);
 		}
@@ -56,10 +62,10 @@ void bind_address_server(SOCKET sclient)
 		sockaddr_in serAddr;
 		serAddr.sin_family = AF_INET;
 		serAddr.sin_port = htons(PORT);
-		serAddr.sin_addr.S_un.S_addr = inet_addr(IP_ARR);
+		serAddr.sin_addr.S_un.S_addr = inet_addr(SERVER_IP);
 		if (connect(sclient, (sockaddr*)& serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
-			printf("Á¬½Ó´íÎó£¡");
+			printf("è¿æ¥é”™è¯¯ï¼");
 			closesocket(sclient);
 			exit(1);
 		}
@@ -70,16 +76,16 @@ void bind_address_servertwo(SOCKET sclient)
 		sockaddr_in serAddr;
 		serAddr.sin_family = AF_INET;
 		serAddr.sin_port = htons(PORT_SERVER);
-		serAddr.sin_addr.S_un.S_addr = inet_addr(IP_ARR);
+		serAddr.sin_addr.S_un.S_addr = inet_addr(SERVER_IP);
 		if (connect(sclient, (sockaddr*)& serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
-			printf("Á¬½Ó´íÎó£¡");
+			printf("è¿æ¥é”™è¯¯ï¼");
 			closesocket(sclient);
 			exit(1);
 		}
 }
 
-int socker_p2p()	//¿Í»§¶Ëµã¶ÔµãÍ¨Ñ¶º¯Êı
+int socker_p2p()	//å®¢æˆ·ç«¯ç‚¹å¯¹ç‚¹é€šè®¯å‡½æ•°
 {
 	SOCKET sclient = create_socket();
 	bind_address_p2p(sclient);
@@ -87,7 +93,7 @@ int socker_p2p()	//¿Í»§¶Ëµã¶ÔµãÍ¨Ñ¶º¯Êı
 	char a[255];
 	while(strcmp(a,"bye"))
 	{   
-        printf("<¿Í»§¶Ë>£º");
+        printf("æˆ‘<%s>ï¼š",MY_N);
         gets(a);
 		send(sclient, (const char*)(&a) , sizeof(a), 0);
 		char recData[255];
@@ -96,7 +102,7 @@ int socker_p2p()	//¿Í»§¶Ëµã¶ÔµãÍ¨Ñ¶º¯Êı
 		if (ret > 0)
 		{
 				recData[ret] = 0x00;
-				printf("<·şÎñÆ÷>£º");
+				printf("<%s>ï¼š",HE_N);
 				printf("%s\n", d);
 		}
 	}
@@ -109,11 +115,11 @@ int sender_p2p()
 {
 	SOCKET sclient = create_socket();
 	bind_address_server(sclient);
-
+	printf("è¿æ¥æˆåŠŸï¼\n");
 	char a[255];
 	while(strcmp(a,"bye") != 0)
 	{   
-        printf("¿Í»§¶Ë1£º");
+		printf("æˆ‘<%s>ï¼š", MY_N);
         gets(a);
 		send(sclient, (const char*)(&a) , sizeof(a), 0);
 		char recData[255];
@@ -122,7 +128,7 @@ int sender_p2p()
 		if (ret > 0)
 		{
 				recData[ret] = 0x00;
-				printf("¿Í»§¶Ë2£º");
+				printf("<%s>ï¼š", HE_N);
 				printf("%s\n", d);
 		}
 	}
@@ -135,7 +141,7 @@ int server_p2p()
 {
 	SOCKET sclient = create_socket();
 	bind_address_servertwo(sclient);
-
+	printf("è¿æ¥æˆåŠŸï¼\n");
 	char a[255];
 	while(strcmp(a,"bye") != 0)
 	{   
@@ -145,10 +151,10 @@ int server_p2p()
 		if (ret > 0)
 		{
 				recData[ret] = 0x00;
-				printf("¿Í»§¶Ë1£º");
+				printf("<%s>ï¼š", HE_N);
 				printf("%s\n", d);
 		}
-		printf("¿Í»§¶Ë2£º");
+		printf("æˆ‘<%s>ï¼š", MY_N);
         gets(a);
 		send(sclient, (const char*)(&a) , sizeof(a), 0);
 	}
@@ -157,15 +163,17 @@ int server_p2p()
 	return 1;
 }
 
-int main()
+int fun()
 {
-	WSAsetup();
 	int choose = 0;
 	int status = 0;
 	inputerror:
-	printf("1.µã¶Ôµã 2.×ª·¢·¢ËÍ 3.×ª·¢½ÓÊÕ\n");
+	system("color 03");
+	printf("1.ç‚¹å¯¹ç‚¹å‘é€ \n2.è½¬å‘å‘é€ \n3.è½¬å‘æ¥æ”¶\n");
 	scanf("%d",&choose);
 	getchar();
+	system("color 07");
+	system("cls");
 	switch (choose)
 	{
 	case 1:
@@ -176,19 +184,36 @@ int main()
 		break;
 	case 3:
 		status = server_p2p();
+		break;
 	default:
-		printf("ÊäÈë´íÎó£¡");
+		printf("è¾“å…¥é”™è¯¯ï¼");
 		system("cls");
 		goto inputerror;
 		break;
 	}
+	return status;
+}
+
+void end(int status)
+{
 	if (status)
 	{
-		printf("³É¹¦Ö´ĞĞ£¡\n");
+		printf("æˆåŠŸæ‰§è¡Œï¼\n");
+		system("cls");
 	}
 	if (!status)
 	{
-		printf("Ê§°Ü£¡\n");
+		printf("å¤±è´¥ï¼\n");
+		system("cls");
 	}
+}
+
+int app(char ipnum[],char hename[])
+{
+	strcpy(IP_ARR,ipnum);
+	strcpy(HE_N, hename);
+	WSAsetup();
+	end(fun());
+	system("cls");
 	return 0;
 }
